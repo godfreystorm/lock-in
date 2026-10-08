@@ -78,6 +78,7 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 var(--f-display);letter-spacing:-.02em;mar
 .foot a{color:var(--be)}
 [hidden]{display:none!important}
 .authf{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#psync:empty{display:none}
 .authf input{font:13px var(--f-mono);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);min-width:0;width:240px;max-width:100%}
 .authf a{color:var(--be);font-size:13px}
 .err{color:#C0392B;font-size:13px}
@@ -156,13 +157,13 @@ function copyBtn(label,text){const b=el("button","pbtn",label);b.onclick=()=>{na
 function cmd(text){const w=el("div","cmd");w.append(el("code",null,text),copyBtn("Copy",text));return w}
 const gh=(path,opt={})=>fetch(API+path,{...opt,headers:{Accept:"application/vnd.github+json",...(editor?{Authorization:`Bearer ${editor.token}`}:{}),...(opt.headers||{})}});
 const b64=s=>btoa(unescape(encodeURIComponent(s))),unb64=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,""))));
-function setSync(t){$("sync").textContent=t}
+function setSync(t){$("sync").textContent=t;const ps=$("psync");if(ps)ps.textContent=t}
 
 async function loadProgress(){
   try{const r=await gh(`/contents/${PFILE}?ref=main`,{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json();P=JSON.parse(unb64(j.content));}
   catch(e){try{P=await fetch("progress.json",{cache:"no-store"}).then(r=>r.json())}catch(x){}}
   P.s=P.s||{};P.dirs=P.dirs||{};
-  if(P.updated)setSync("Updated "+new Date(P.updated).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}));
+  if(P.updated)$("sync").textContent=("Updated "+new Date(P.updated).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}));
 }
 function save(label,status){
   setSync("Saving…");
@@ -185,12 +186,12 @@ function setStatus(n,v){
   const s={...P.s};
   if(v==="todo"){ if(n.kind==="s")s[n.id]="in";else delete s[n.id]} else if(v==="skip"){delete s[n.id]} else s[n.id]=v;
   P={...P,s};pending[n.id]=v==="skip"?"todo":(v==="todo"&&n.kind==="s"?"in":v);
-  render();openPanel(n);save(n.label,v==="skip"?"skipped":v==="todo"&&n.kind==="s"?"on path":v);
+  const Pn=$("panel"),top=Pn.scrollTop;render();openPanel(n);Pn.scrollTop=top;save(n.label,v==="skip"?"skipped":v==="todo"&&n.kind==="s"?"on path":v);
 }
 
 function guard(n,v){if(editor){setStatus(n,v);return}
   const g=$("gate");if(!g)return;g.textContent="";g.append(el("p","muted","Only the owner can change progress. Paste your GitHub key once to unlock editing on this device."));
-  g.append(keyForm(()=>setStatus(n,v)))}
+  g.append(keyForm(()=>setStatus(n,v)));g.scrollIntoView({block:"nearest",behavior:"smooth"})}
 function keyForm(after){const f=el("form","authf");const inp=el("input");inp.type="password";inp.placeholder="Your GitHub key for lock-in";inp.autocomplete="off";
   const go=el("button","pbtn","Unlock");go.type="submit";const err=el("span","err");
   const help=el("a",null,"Make a key");help.href="https://github.com/settings/personal-access-tokens/new";help.target="_blank";help.rel="noopener";
@@ -220,7 +221,7 @@ function openPanel(n){openId=n.id;const Pn=$("panel");Pn.textContent="";Pn.style
         :e==="b"?["Finish the nodes in this stage first; this project uses them.","Build it in your lock-in repo with a README: what it does, how it works, what broke, the numbers.","Use your own data (FocusDown, Aura, PoshPaw), never LineLeader's. AI coding tools are allowed here.","Walk Claude through every choice like an interview. Then mark it done."]
         :["Read or watch one or two of the links above (20 to 40 minutes).","Write it in your own words in your lock-in repo, with the sources closed. Code it if there's something to code.","Get tested cold: copy the message below and paste it to Claude.","Pass: mark it done."];
       st.forEach(t=>ol.append(el("li",null,t)));how.append(ol);Pn.append(how);
-      const sg=el("div","seg");[["todo","To do"],["doing","Doing"],["done","Done"]].forEach(([v,l])=>{const b=el("button",null,l);b.setAttribute("aria-pressed",String(p===v));b.onclick=()=>{if(p!==v)guard(n,v)};sg.append(b)});Pn.append(sg);const gate=el("div");gate.id="gate";Pn.append(gate);
+      const sg=el("div","seg");[["todo","To do"],["doing","Doing"],["done","Done"]].forEach(([v,l])=>{const b=el("button",null,l);b.setAttribute("aria-pressed",String(p===v));b.onclick=()=>{if(p!==v)guard(n,v)};sg.append(b)});Pn.append(sg);const ps=el("p","muted");ps.id="psync";ps.setAttribute("role","status");Pn.append(ps);const gate=el("div");gate.id="gate";Pn.append(gate);
       const row=el("div","prow");row.append(copyBtn("Copy “test me” message",`Test me on "${n.label}" (${T[n.tree].name} roadmap, ${n.group}). No notes. Ask me to explain it in 60 seconds, then push on the weak spot.`));
       if(n.kind==="s"){const sk=el("button","pbtn","Skip again");sk.onclick=()=>guard(n,"skip");row.append(sk)}
       Pn.append(row);
