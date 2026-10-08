@@ -5,6 +5,8 @@
   "description": "Godfrey's practice repo for The Lock-In: one folder per roadmap node.",
   "scripts": {
     "new": "tsx scripts/new.ts",
+    "done": "tsx scripts/done.ts",
+    "progress": "tsx -e \"import('./scripts/nodes.ts').then(m=>m.writeProgress())\"",
     "test": "node --import tsx --test \"**/*.test.ts\"",
     "run": "tsx"
   },

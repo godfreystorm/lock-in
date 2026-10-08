@@ -9,38 +9,36 @@ Why it exists:
 
 ---
 
-## The three places
+## One place
 
-| Place | What it's for |
-|---|---|
-| [**The Lock-In Tree**](https://claude.ai/artifact/SHoqXPfpsRLL4pxRm8ZCR1) | **The map.** All 3 roadmap.sh trees (Backend, AI Engineer, DSA) in 8 stages. Click a node for its description, the links to learn from, and its status. |
-| **This repo** | **The work.** One folder per node: my notes, my code, my tests. |
-| `Obsidian Vault/Learning/The Lock-In.md` | **The rules and the weekly log.** The week plan, the rules, and a one-line log every Sunday. |
+Everything lives in this repo:
+
+- **The tree:** [godfreystorm.github.io/lock-in](https://godfreystorm.github.io/lock-in/). All 3 roadmap.sh trees (Backend, AI Engineer, DSA) in 8 stages. Click any node for its description, the free articles and videos to learn from, and the exact command to run next.
+- **The status comes from the repo itself.** A node turns **Doing** when its folder exists (`npm run new`) and **Done** when you run `npm run done`. Push, and the tree updates in a minute or two. No buttons, nothing to keep in sync.
+- **The rules and the weekly log** stay in the vault: `Obsidian Vault/Learning/The Lock-In.md`.
 
 ---
 
 ## The loop: do this for every node
 
-1. **Pick the next node** in the Tree: the first unfinished one in the current stage. Weekdays: Backend. Saturdays: AI. Every weekday, 30 minutes of DSA first.
-2. **Click it** and set it to **Doing**.
-3. **Learn it** from the panel's links: one or two articles or videos, 20 to 40 minutes.
-4. **Make its folder:**
+1. **Open the tree** and click the next node in the current stage. Weekdays: Backend. Saturdays: AI. Every weekday, 30 minutes of DSA first.
+2. **Learn it** from the panel's links: one or two articles or videos, 20 to 40 minutes.
+3. **Start it.** The panel shows the exact command; copy it:
    ```bash
    npm run new -- backend "How does the internet work?"
+   npm run new -- dsa "Hash Tables" --code     # --code adds main.ts + main.test.ts
    ```
-   Add `--code` if the node has something to code (DSA always does):
+   A partial name works if it's unique (`"hash"` finds "Hash Tables").
+4. **Write `notes.md` with the sources closed.** If you can't explain it without looking, go back to step 2.
+5. **Code it** (when the node has code) in `main.ts`, with tests in `main.test.ts` for the normal case, an edge case, and the case you think breaks it.
+6. **Get tested.** In the panel, click **Copy "test me" message**, paste it to Claude, and answer cold. Log the result in `notes.md`.
+7. **Pass? Mark it done and push:**
    ```bash
-   npm run new -- dsa "Hash Tables" --code
-   ```
-5. **Write `notes.md` with the sources closed.** If you can't explain it without looking, go back to step 3.
-6. **Code it** (when the node has code) in `main.ts`, and write tests in `main.test.ts` for the normal case, an edge case, and the case you think breaks it.
-7. **Get tested.** In the Tree's panel, click **Copy "test me" message**, paste it to Claude, and answer cold. Log the result in `notes.md`.
-8. **Pass?** Set the node to **Done** in the Tree, then commit:
-   ```bash
-   git add -A && git commit -m "backend: how does the internet work"
+   npm run done -- backend "How does the internet work?"
+   git add -A && git commit -m "backend: how does the internet work" && git push
    ```
 
-**"Prove it" nodes** (the dashed ones: things you already use at work or in your projects) skip steps 3–6. Just do the cold 60-second explain-back with Claude. Clean explanation: mark it done. Shaky: it becomes a normal node and you go through the whole loop.
+**"Prove it" nodes** (the dashed ones: things you already use at work or in your projects) start the node (step 3), then skip straight to the cold 60-second explain-back with Claude (step 6). Clean explanation: mark it done. Shaky: it becomes a normal node and you go through the whole loop.
 
 ---
 
@@ -52,8 +50,9 @@ lock-in/
 ├── ai/             one folder per AI Engineer node
 ├── dsa/            one folder per DSA node        → dsa/001-hash-tables/
 ├── _example/       a finished folder, so you can see the shape (not a real node)
+├── docs/           the tree page (GitHub Pages): tree.json = roadmap data, progress.json = your status
 ├── templates/      the notes.md template the script copies
-└── scripts/new.ts  the "npm run new" script
+└── scripts/        new.ts, done.ts, nodes.ts (the commands)
 ```
 
 Each node folder:
@@ -72,8 +71,9 @@ Numbers count up in each tree, so the folders stay in the order you learned them
 
 | Command | Does |
 |---|---|
-| `npm run new -- <backend\|ai\|dsa> "Node name"` | Makes a node folder with `notes.md` |
+| `npm run new -- <backend\|ai\|dsa> "Node name"` | Starts a node: makes its folder with `notes.md` and turns it Doing on the tree |
 | `npm run new -- dsa "Node name" --code` | Same, plus `main.ts` and `main.test.ts` |
+| `npm run done -- <backend\|ai\|dsa> "Node name"` | Marks it Done (after you pass the test) |
 | `npm test` | Runs every test in the repo |
 | `npm run run -- dsa/001-hash-tables/main.ts` | Runs one file |
 

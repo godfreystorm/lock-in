@@ -1,7 +1,7 @@
-<!-- node: {{id}} -->
-# {{name}}
+<!-- node: B-introduction-how-does-the-internet-work -->
+# How does the internet work?
 
-**Tree:** {{tree}} · **Started:** {{date}} · **Status:** doing
+**Tree:** backend · Introduction · **Started:** 2026-10-08 · **Status:** doing
 
 ## In my own words
 <!-- Write this AFTER reading/watching, with the sources CLOSED. If you can't, you're not done reading. -->

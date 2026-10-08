@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Lock-In Tree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one vertical spine of 8 stages; each stage holds three lanes (Backend, AI, DSA) of clickable node chips. */
+:root{
+  --bg:#F3F5F8; --panel:#FFFFFF; --ink:#13171F; --muted:#5B6474; --line:#D5DBE5;
+  --be:#1F64D6; --be-t:#E3ECFB; --ai:#0E8F7E; --ai-t:#DDF3EF; --ds:#C2560E; --ds-t:#FBEADC;
+  --done:#13171F; --skip:#9AA3B2;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1117; --panel:#161B24; --ink:#E8ECF3; --muted:#9AA4B5; --line:#2A3241;
+  --be:#6EA2FF; --be-t:#18264A; --ai:#3DD1BB; --ai-t:#0F2F2B; --ds:#F0904D; --ds-t:#3A2414;
+  --done:#E8ECF3; --skip:#5E6778; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1117; --panel:#161B24; --ink:#E8ECF3; --muted:#9AA4B5; --line:#2A3241;
+  --be:#6EA2FF; --be-t:#18264A; --ai:#3DD1BB; --ai-t:#0F2F2B; --ds:#F0904D; --ds-t:#3A2414;
+  --done:#E8ECF3; --skip:#5E6778; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
+h1{font:700 clamp(30px,5vw,48px)/1.05 var(--f-display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.sub{color:var(--muted);max-width:68ch;margin:10px 0 0}
+.top{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:24px 0 10px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.stat .k{font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font:700 28px/1.1 var(--f-display);margin-top:8px;font-variant-numeric:tabular-nums}
+.stat .s{font-size:13px;color:var(--muted);margin-top:4px}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px}
+.ctrls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 0 6px;font-size:13px;color:var(--muted)}
+.ctrls label{display:flex;align-items:center;gap:8px}
+.ctrls input[type=range]{width:140px;accent-color:var(--be)}
+.ctrls b{color:var(--ink);font-family:var(--f-mono);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12.5px;color:var(--muted);margin:6px 0 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:22px;height:14px;border-radius:4px;border:1.5px solid var(--muted)}
+.sync{font:12px var(--f-mono);color:var(--muted)}
+.stage{position:relative;margin-top:30px;padding-left:34px}
+.stage:before{content:"";position:absolute;left:10px;top:0;bottom:-30px;width:2px;background:var(--line)}
+.stage:last-child:before{bottom:0}
+.dot{position:absolute;left:2px;top:4px;width:18px;height:18px;border-radius:50%;background:var(--panel);border:2px solid var(--ink);display:grid;place-items:center;font:500 10px var(--f-mono)}
+.stage.complete .dot{background:var(--ink);color:var(--panel)}
+.sh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.sh h2{font:700 22px/1.2 var(--f-display);margin:0;letter-spacing:-.01em}
+.sh .meta{font:12px var(--f-mono);color:var(--muted)}
+.lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:900px){.lanes{grid-template-columns:1fr}}
+.lane{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:0 0 10px 10px;padding:12px 12px 14px;min-width:0}
+.lane.empty{opacity:.6}
+.lt{display:flex;justify-content:space-between;gap:8px;font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.grp{margin-top:12px}
+.gt{font-size:12.5px;font-weight:600;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:13px/1.25 var(--f-body);color:var(--ink);background:transparent;border:1.5px solid var(--c);border-radius:6px;padding:4px 8px;cursor:pointer;text-align:left;display:inline-flex;align-items:center;gap:6px;max-width:100%}
+.chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.chip.p{border-style:dashed}
+.chip.b{border-width:2.5px;font-weight:600}
+.chip .tag{font:500 9.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c);border:1px solid currentColor;border-radius:3px;padding:2px 3px}
+.chip.doing{background:var(--t)}
+.chip.doing:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
+.chip.done{background:var(--c);color:var(--panel);border-style:solid}
+.chip.done .tag{color:var(--panel)}
+.chip.done:before{content:"✓";font-size:12px}
+.chip.s{border-color:var(--skip);color:var(--skip);text-decoration:line-through;border-style:solid}
+.skips{margin-top:10px}
+.skips summary{font:12px var(--f-mono);color:var(--muted);cursor:pointer}
+.skips .chips{margin-top:6px}
+.foot{margin-top:40px;font-size:13px;color:var(--muted);max-width:75ch}
+.foot a{color:var(--be)}
+.cmd{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px 8px 8px 12px;min-width:0}
+.cmd code{font:12.5px/1.4 var(--f-mono);flex:1;min-width:0;overflow-wrap:anywhere}
+.st-doing{background:var(--c);color:var(--panel)}
+.st-done{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.st-todo{border-color:var(--muted);color:var(--muted)}
+.scrim{position:fixed;inset:0;background:rgba(10,14,20,.38);z-index:20}
+.panel{position:fixed;z-index:21;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:calc(18px + env(safe-area-inset-top,0px)) 22px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
+@media (max-width:640px){.panel{top:auto;height:86%;border-left:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0}}
+.panel>*{flex-shrink:0}
+.p-eye{font:500 11px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.p-h{font:700 26px/1.15 var(--f-display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.p-x{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:14px;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:16px}
+.badge{display:inline-block;font:500 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--c);color:var(--c);border-radius:4px;padding:4px 6px}
+.p-d{margin:0;color:var(--ink);max-width:62ch}
+.p-sec{font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.res{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.res a{display:flex;gap:10px;align-items:baseline;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.res a:hover{border-color:var(--c)}
+.res .ty{font:500 10px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--c);flex:none;width:58px}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:500 13px var(--f-body);padding:10px 6px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--c);color:var(--panel)}
+.pbtn{font:500 13px var(--f-body);padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer}
+.prow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--muted);font-size:13px}
+.prow a{color:var(--c);font-size:13px}
+@media (prefers-reduced-motion:no-preference){.chip{transition:background .12s,color .12s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The Lock-In Tree</h1>
+  <p class="sub">Three roadmap.sh trees (Backend, AI Engineer, Data Structures &amp; Algorithms) in one path. Duplicates are merged, and the "pick one" choices are made for your stack. <b>Click any node</b> to open its description and the free articles and videos roadmap.sh recommends. The status comes from <a href="https://github.com/godfreystorm/lock-in" style="color:var(--be)">this repo</a>: a node turns <b>Doing</b> when its folder exists and <b>Done</b> after <code>npm run done</code>.</p>
+
+  <div class="top" id="top"></div>
+
+  <div class="ctrls">
+    <label>Hours a day <input id="hpd" type="range" min="1" max="4" step="0.5" value="2"> <b id="hpdv">2</b></label>
+    <label><input id="showSkip" type="checkbox"> Show skipped options</label>
+    <span class="sync" id="sync">Progress from the repo</span>
+  </div>
+  <div class="legend">
+    <span><i class="sw" style="border-style:solid"></i> New: learn it (~2.5 h avg)</span>
+    <span><i class="sw" style="border-width:2.5px"></i> Build project (~15 h)</span>
+    <span><i class="sw" style="border-style:dashed"></i> Prove it: you use it at work or in your projects (60-second explain-back)</span>
+    <span><i class="sw" style="background:var(--muted);border-color:var(--muted)"></i> Done</span>
+    <span><i class="sw" style="background:var(--be-t);border-color:var(--be)"></i> Doing</span>
+    <span><i class="sw" style="border-color:var(--skip)"></i> Skipped alternative</span>
+  </div>
+
+  <div id="tree"></div>
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="panel" id="panel" hidden aria-modal="true" role="dialog" aria-labelledby="pTitle"></aside>
+
+  <p class="foot">Every node comes from roadmap.sh (pulled 2026-10-01). The stack choices come from your work vault and side projects. TypeScript is the main language and the interview language. Python comes in once, at Stage 3, as a second language, because about half the roles in your career-ops pipeline mention it. Nothing is marked done until you run <code>npm run done</code>. Starting a skipped node puts it on your path. AWS has its own <a href="https://roadmap.sh/aws">tree</a> for when the Backend tree reaches it. Sources: <a href="https://roadmap.sh/backend">Backend</a> · <a href="https://roadmap.sh/ai-engineer">AI Engineer</a> · <a href="https://roadmap.sh/datastructures-and-algorithms">DSA</a>.</p>
+</div>
+<script>
+const T={B:{name:"Backend",c:"--be",t:"--be-t",dir:"backend"},A:{name:"AI Engineer",c:"--ai",t:"--ai-t",dir:"ai"},D:{name:"DSA",c:"--ds",t:"--ds-t",dir:"dsa"}};
+const REPO="https://github.com/godfreystorm/lock-in";
+const H={n:2.5,p:.5,b:15};
+let STAGES=[],C={},NODES=[],P={s:{},dirs:{}},hpd=2,openId=null;
+try{const v=+localStorage.getItem("lockin-hpd");if(v>=1&&v<=4)hpd=v}catch(e){}
+const $=id=>document.getElementById(id);
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const eff=n=>(n.kind==="s"&&!P.s[n.id])?"s":(n.kind==="s"?"n":n.kind);
+const prog=n=>P.s[n.id]||"todo";
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+function copyBtn(label,text){const b=el("button","pbtn",label);b.onclick=()=>{navigator.clipboard?.writeText(text).then(()=>b.textContent="Copied").catch(()=>{b.textContent=text})};return b}
+function cmd(text){const w=el("div","cmd");const c=el("code",null,text);w.append(c,copyBtn("Copy",text));return w}
+function closePanel(){$("panel").hidden=true;$("scrim").hidden=true;openId=null}
+function openPanel(n){openId=n.id;const Pn=$("panel");Pn.textContent="";Pn.style.setProperty("--c",`var(${T[n.tree].c})`);
+  const e=eff(n),p=prog(n),c=C[n.id]||{},tree=T[n.tree].dir,code=(n.tree==="D"||e==="b")?" --code":"";
+  const x=el("button","p-x","×");x.setAttribute("aria-label","Close");x.onclick=closePanel;Pn.append(x);
+  Pn.append(el("div","p-eye",`${T[n.tree].name} · Stage ${n.stage+1}: ${STAGES[n.stage].t} · ${n.group}`));
+  const h=el("h3","p-h",n.label);h.id="pTitle";Pn.append(h);
+  const bd=el("div","prow");bd.append(el("span","badge",e==="s"?"Skipped option":e==="p"?"Prove it":e==="b"?"Build project · ~15 h":`New · ~${n.h||2.5} h`));
+  bd.append(el("span","badge st-"+(e==="s"?"todo":p),e==="s"?"not on your path":p==="todo"?"To do":p==="doing"?"Doing":"Done ✓"));
+  if(n.tag)bd.append(el("span","muted",n.tag));Pn.append(bd);
+  if(c.d)Pn.append(el("p","p-d",c.d));
+  const rs=el("div");rs.append(el("div","p-sec","Learn from"));
+  if(c.r&&c.r.length){const ul=el("ul","res");c.r.forEach(r=>{const li=el("li");const a=el("a");a.href=r.u;a.target="_blank";a.rel="noopener";a.append(el("span","ty",r.t||"link"),el("span",null,r.n||r.u));li.append(a);ul.append(li)});rs.append(ul)}
+  else rs.append(el("p","muted","roadmap.sh doesn't list links for this one. Use the description above and the links on the nodes next to it in this group."));
+  Pn.append(rs);
+  const how=el("div");how.append(el("div","p-sec","What to do next"));
+  if(p==="done"){how.append(el("p","p-d","Done. Your notes for this node are in the repo."))}
+  else if(p==="doing"){
+    const st=e==="p"?["Close your notes and explain it out loud in 60 seconds, or ask Claude to test you.","Clean explanation: mark it done. Shaky: write it up properly in notes.md first."]
+      :e==="b"?["Build it in this folder, with a README: what it does, how it works, what broke, the numbers.","Use your own data (FocusDown, Aura, PoshPaw), never LineLeader's. AI coding tools are allowed here.","Walk Claude through every choice like an interview. Then mark it done."]
+      :["Write notes.md in your own words, with the sources closed.","Code it if there's something to code, with tests.","Get tested cold by Claude (copy the message below). Pass, then mark it done."];
+    const ol=el("ol","steps");st.forEach(t=>ol.append(el("li",null,t)));how.append(ol);
+    how.append(el("div","p-sec","When you pass, run this in ~/Documents/lock-in"));how.append(cmd(`npm run done -- ${tree} "${n.label}"`));}
+  else{
+    how.append(el("p","p-d",e==="s"?"This is an alternative to the option already on your path. Starting it adds it to your path.":e==="p"?"You already use this at work or in your projects. Start it, then do the 60-second explain-back.":"Read or watch one or two of the links above (20 to 40 minutes), then start it. Starting it makes the folder and turns it to Doing here."));
+    how.append(el("div","p-sec","Start it: run this in ~/Documents/lock-in"));how.append(cmd(`npm run new -- ${tree} "${n.label}"${code}`));}
+  Pn.append(how);
+  const row=el("div","prow");
+  if(p!=="todo"||e!=="s")row.append(copyBtn("Copy “test me” message",`Test me on "${n.label}" (${T[n.tree].name} roadmap, ${n.group}). No notes. Ask me to explain it in 60 seconds, then push on the weak spot.`));
+  if(P.dirs[n.id]){const a=el("a",null,"Open my notes on GitHub");a.href=`${REPO}/tree/main/${P.dirs[n.id]}`;a.target="_blank";a.rel="noopener";row.append(a)}
+  Pn.append(row);
+  const src=el("div","prow");const a=el("a",null,"Open this roadmap on roadmap.sh");a.href=c.src||"https://roadmap.sh";a.target="_blank";a.rel="noopener";src.append(a);Pn.append(src);
+  Pn.hidden=false;$("scrim").hidden=false;x.focus()}
+function chip(n){const b=document.createElement("button");const e=eff(n),p=prog(n);
+  b.className="chip "+e+(e!=="s"?" "+p:"");b.type="button";b.style.setProperty("--c",`var(${T[n.tree].c})`);b.style.setProperty("--t",`var(${T[n.tree].t})`);
+  b.append(document.createTextNode(n.label));
+  if(n.tag&&e!=="s"){const t=el("span","tag",n.tag);b.append(t)}
+  b.title="Open details";b.setAttribute("aria-label",`${n.label}, ${e==="s"?"skipped":p}`);b.onclick=()=>openPanel(n);return b}
+function render(){
+  const showSkip=$("showSkip").checked;const tree=$("tree");tree.textContent="";
+  const live=NODES.filter(n=>eff(n)!=="s");
+  const left=live.filter(n=>prog(n)!=="done").reduce((a,n)=>a+(n.h||H[eff(n)])*(prog(n)==="doing"?.5:1),0);
+  const wk=hpd*7*.8,weeks=left/wk;const fin=new Date(Date.now()+weeks*7*864e5);
+  const top=$("top");top.textContent="";
+  const stat=(k,v,s,pct,c)=>{const d=el("div","stat");d.append(el("div","k",k),el("div","v",v),el("div","s",s));
+    if(pct!=null){const b=el("div","bar");const i=el("i");i.style.width=pct+"%";i.style.background=`var(${c})`;b.append(i);d.append(b)}top.append(d)};
+  const done=live.filter(n=>prog(n)==="done").length,doing=live.filter(n=>prog(n)==="doing").length;
+  stat("Overall",Math.round(done/live.length*100)+"%",`${done} done, ${doing} in progress, ${live.length} total`,done/live.length*100,"--ink");
+  ["B","A","D"].forEach(k=>{const L=live.filter(n=>n.tree===k),d=L.filter(n=>prog(n)==="done").length;stat(T[k].name,`${d} / ${L.length}`,`${L.filter(n=>eff(n)==="p").length} are "prove it" nodes`,d/L.length*100,T[k].c)});
+  stat("Finish line",fin.toLocaleDateString("en-US",{month:"short",year:"numeric"}),`~${Math.round(left)} h left at ${hpd} h/day, 80% of days`,null);
+  STAGES.forEach((st,si)=>{
+    const sn=live.filter(n=>n.stage===si),sd=sn.filter(n=>prog(n)==="done").length;
+    const hrs=sn.reduce((a,n)=>a+(n.h||H[eff(n)]),0);
+    const sec=el("section","stage"+(sn.length&&sd===sn.length?" complete":""));
+    const dot=el("span","dot",String(si+1));const sh=el("div","sh");sh.append(el("h2",null,st.t),el("span","meta",`${sd}/${sn.length} done · ~${Math.round(hrs)} h · ~${Math.max(1,Math.round(hrs/wk))} wk at ${hpd} h/day`));
+    const lanes=el("div","lanes");sec.append(dot,sh,lanes);
+    ["B","A","D"].forEach(k=>{const lane=el("div","lane");lane.style.setProperty("--c",`var(${T[k].c})`);
+      const groups=st[k]||[];const ln=NODES.filter(n=>n.stage===si&&n.tree===k);
+      const lt=el("div","lt");const lv=ln.filter(n=>eff(n)!=="s");lt.append(el("span",null,T[k].name),el("span",null,lv.length?`${lv.filter(n=>prog(n)==="done").length}/${lv.length}`:""));lane.append(lt);
+      if(!groups.length){lane.classList.add("empty");const p=el("div","gt",k==="B"?"Backend tree complete by this stage.":"DSA keeps going as NeetCode practice.");p.style.marginTop="12px";p.style.fontWeight="400";p.style.color="var(--muted)";lane.append(p)}
+      groups.forEach(([g])=>{const gn=ln.filter(n=>n.group===g);const on=gn.filter(n=>eff(n)!=="s"),off=gn.filter(n=>eff(n)==="s");
+        const box=el("div","grp");box.append(el("div","gt",g));const ch=el("div","chips");on.forEach(n=>ch.append(chip(n)));box.append(ch);
+        if(off.length){const det=el("details","skips");det.open=showSkip;det.append(el("summary",null,`${off.length} skipped option${off.length>1?"s":""}`));const c2=el("div","chips");off.forEach(n=>c2.append(chip(n)));det.append(c2);box.append(det)}
+        lane.append(box)});
+      lanes.append(lane)});
+    tree.append(sec)});
+}
+$("hpd").value=hpd;$("hpdv").textContent=hpd;
+$("hpd").addEventListener("input",e=>{hpd=+e.target.value;$("hpdv").textContent=hpd;try{localStorage.setItem("lockin-hpd",String(hpd))}catch(x){}render()});
+$("showSkip").addEventListener("change",render);
+$("scrim").addEventListener("click",closePanel);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&openId)closePanel()});
+(async()=>{
+  try{const t=await fetch("tree.json").then(r=>r.json());STAGES=t.stages;C=t.content}
+  catch(e){$("tree").textContent="Couldn't load tree.json. Open this page from GitHub Pages, or run a local server in docs/.";return}
+  try{P=await fetch("progress.json",{cache:"no-store"}).then(r=>r.json());P.s=P.s||{};P.dirs=P.dirs||{}}catch(e){}
+  STAGES.forEach((st,si)=>["B","A","D"].forEach(k=>(st[k]||[]).forEach(([g,list])=>list.forEach(raw=>{
+    const [label,kind="n",tag="",hrs]=raw.split("|");NODES.push({id:k+"-"+slug(g)+"-"+slug(label),label:label.trim(),kind,tag,tree:k,stage:si,group:g,h:hrs?+hrs:null})}))));
+  if(P.updated)$("sync").textContent="Progress from the repo, updated "+new Date(P.updated).toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  render();
+})();
+</script>
+</body>
+</html>
