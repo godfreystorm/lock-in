@@ -1,0 +1,16 @@
+{
+  "name": "lock-in",
+  "private": true,
+  "type": "module",
+  "description": "Godfrey's practice repo for The Lock-In: one folder per roadmap node.",
+  "scripts": {
+    "new": "tsx scripts/new.ts",
+    "test": "node --import tsx --test \"**/*.test.ts\"",
+    "run": "tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
