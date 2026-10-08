@@ -2,7 +2,7 @@
 // Usage: npm run done -- <backend|ai|dsa> "Node name"
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { findNode, loadNodes, scanFolders, TREES, type Tree, writeProgress } from "./nodes.ts";
+import { findNode, loadNodes, scanFolders, TREES, pullFirst, type Tree, writeProgress } from "./nodes.ts";
 
 const [tree, name] = process.argv.slice(2);
 
@@ -11,6 +11,7 @@ if (!tree || !TREES.includes(tree as Tree) || !name) {
   process.exit(1);
 }
 
+pullFirst();
 const node = findNode(loadNodes(), tree as Tree, name);
 if (typeof node === "string") {
   console.error(node);

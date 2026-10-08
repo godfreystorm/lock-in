@@ -1,6 +1,7 @@
 // Shared tree helpers: the node list (built from docs/tree.json) and the folder scan.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { execSync } from "node:child_process";
 
 export type Tree = "backend" | "ai" | "dsa";
 export const TREES: Tree[] = ["backend", "ai", "dsa"];
@@ -68,15 +69,28 @@ export function scanFolders(): { dir: string; id: string; status: "doing" | "don
   return out;
 }
 
-// Writes docs/progress.json, which the tree page reads.
+// Merges folder status into docs/progress.json (which the dashboard also edits).
+// A folder can only move a node forward (to do → doing → done); it never undoes a dashboard edit.
 export function writeProgress() {
-  const s: Record<string, string> = {};
-  const dirs: Record<string, string> = {};
+  const file = "docs/progress.json";
+  const cur = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : {};
+  const s: Record<string, string> = cur.s ?? {};
+  const dirs: Record<string, string> = cur.dirs ?? {};
+  const rank: Record<string, number> = { doing: 1, done: 2 };
   for (const f of scanFolders()) {
-    s[f.id] = f.status;
+    if ((rank[s[f.id]] ?? 0) < rank[f.status]) s[f.id] = f.status;
     dirs[f.id] = f.dir;
   }
-  writeFileSync("docs/progress.json", JSON.stringify({ updated: new Date().toISOString(), s, dirs }, null, 1) + "\n");
-  const done = Object.values(s).filter((v) => v === "done").length;
-  console.log(`Progress: ${done} done, ${Object.keys(s).length - done} doing.`);
+  writeFileSync(file, JSON.stringify({ updated: new Date().toISOString(), s, dirs }, null, 1) + "\n");
+  const vals = Object.values(s);
+  console.log(`Progress: ${vals.filter((v) => v === "done").length} done, ${vals.filter((v) => v === "doing").length} doing.`);
+}
+
+// Pull first so dashboard edits made on GitHub aren't overwritten.
+export function pullFirst() {
+  try {
+    execSync("git pull --rebase --autostash -q", { stdio: "ignore" });
+  } catch {
+    console.warn("Couldn't git pull (offline?). Continuing with the local copy.");
+  }
 }

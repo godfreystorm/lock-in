@@ -14,7 +14,8 @@ Why it exists:
 Everything lives in this repo:
 
 - **The tree:** [godfreystorm.github.io/lock-in](https://godfreystorm.github.io/lock-in/). All 3 roadmap.sh trees (Backend, AI Engineer, DSA) in 8 stages. Click any node for its description, the free articles and videos to learn from, and the exact command to run next.
-- **The status comes from the repo itself.** A node turns **Doing** when its folder exists (`npm run new`) and **Done** when you run `npm run done`. Push, and the tree updates in a minute or two. No buttons, nothing to keep in sync.
+- **Mark progress right on the tree.** Click a node, then hit **To do / Doing / Done**, the same dashboard as before. Anyone can view the tree, but only you can change it: click **Edit (owner only)** and paste your GitHub key (made once, see below). Each click saves a commit to `docs/progress.json`.
+- **The repo commands are optional, in the background.** `npm run new` makes a node's notes folder and sets it Doing, and `npm run done` sets it Done. They pull first and only move a node forward, so they never undo a dashboard click.
 - **The rules and the weekly log** stay in the vault: `Obsidian Vault/Learning/The Lock-In.md`.
 
 ---
@@ -64,6 +65,17 @@ Each node folder:
 ```
 
 Numbers count up in each tree, so the folders stay in the order you learned them.
+
+---
+
+## Your GitHub key (one time)
+
+1. Go to [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new).
+2. Name it `lock-in tree`. Under **Repository access**, pick **Only select repositories** → `lock-in`.
+3. Under **Permissions → Repository permissions**, set **Contents** to **Read and write**.
+4. Generate it, copy it, then paste it on the tree after clicking **Edit (owner only)**. It stays saved in that browser until you click **Lock**.
+
+It can only touch this one repo. Never paste it anywhere else.
 
 ---
 
