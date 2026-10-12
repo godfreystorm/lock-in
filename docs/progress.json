@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-12T01:31:48.923Z",
+ "updated": "2026-10-12T01:31:54.681Z",
  "s": {
   "B-introduction-how-does-the-internet-work": "done",
   "B-introduction-what-is-http": "done",
@@ -10,8 +10,7 @@
   "B-version-control-git": "done",
   "B-version-control-github": "done",
   "A-introduction-what-is-an-ai-engineer": "done",
-  "A-introduction-ai-engineer-vs-ml-engineer": "done",
-  "A-introduction-ai-vs-agi": "done"
+  "A-introduction-ai-engineer-vs-ml-engineer": "done"
  },
  "dirs": {
   "B-introduction-how-does-the-internet-work": "backend/001-how-does-the-internet-work"
