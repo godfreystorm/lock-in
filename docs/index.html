@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one vertical spine of 8 stages; each stage holds three lanes (Backend, AI, DSA) of clickable node chips. */
+/* Layout: one vertical spine of 6 stages; each stage holds three lanes (AI Engineer, Python & DSA, Backend) of clickable node chips. */
 :root{
   --bg:#F3F5F8; --panel:#FFFFFF; --ink:#13171F; --muted:#5B6474; --line:#D5DBE5;
   --be:#1F64D6; --be-t:#E3ECFB; --ai:#0E8F7E; --ai-t:#DDF3EF; --ds:#C2560E; --ds-t:#FBEADC;
@@ -63,6 +63,7 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 var(--f-display);letter-spacing:-.02em;mar
 .chip{font:13px/1.25 var(--f-body);color:var(--ink);background:transparent;border:1.5px solid var(--c);border-radius:6px;padding:4px 8px;cursor:pointer;text-align:left;display:inline-flex;align-items:center;gap:6px;max-width:100%}
 .chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .chip.p{border-style:dashed}
+.chip.l{border-style:dotted;border-width:2px}
 .chip.b{border-width:2.5px;font-weight:600}
 .chip .tag{font:500 9.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c);border:1px solid currentColor;border-radius:3px;padding:2px 3px}
 .chip.doing{background:var(--t)}
@@ -116,7 +117,7 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 var(--f-display);letter-spacing:-.02em;mar
 <body>
 <div class="wrap">
   <h1>The Lock-In Tree</h1>
-  <p class="sub">Three roadmap.sh trees (Backend, AI Engineer, Data Structures &amp; Algorithms) in one path. Duplicates are merged, and the "pick one" choices are made for your stack. <b>Click any node</b> to open its description and the free articles and videos roadmap.sh recommends. Progress is saved in <a href="https://github.com/godfreystorm/lock-in" style="color:var(--be)">this repo</a>. Anyone can look; only I can change it.</p>
+  <p class="sub">One path to a first AI Engineer job, built from three roadmap.sh trees (AI Engineer, Data Structures &amp; Algorithms, Backend). Cut down on 2026-10-11 to what that job needs: AI nodes and three Python builds are the spine, Python is the language for AI work and interviews, and theory you only need to understand is a short lesson with Claude instead of a full node. <b>Click any node</b> to open its description and the free articles and videos roadmap.sh recommends. Progress is saved in <a href="https://github.com/godfreystorm/lock-in" style="color:var(--be)">this repo</a>. Anyone can look; only I can change it.</p>
 
   <div class="top" id="top"></div>
 
@@ -127,8 +128,9 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 var(--f-display);letter-spacing:-.02em;mar
     <span class="prow" id="auth"></span>
   </div>
   <div class="legend">
-    <span><i class="sw" style="border-style:solid"></i> New: learn it (~2.5 h avg)</span>
-    <span><i class="sw" style="border-width:2.5px"></i> Build project (~15 h)</span>
+    <span><i class="sw" style="border-style:solid"></i> Full node: learn it and build with it (~2.5 h avg)</span>
+    <span><i class="sw" style="border-style:dotted;border-width:2px"></i> Lesson with Claude, then a cold test (~30 min)</span>
+    <span><i class="sw" style="border-width:2.5px"></i> Build project in Python (~15 h)</span>
     <span><i class="sw" style="border-style:dashed"></i> Prove it: you use it at work or in your projects (60-second explain-back)</span>
     <span><i class="sw" style="background:var(--muted);border-color:var(--muted)"></i> Done</span>
     <span><i class="sw" style="background:var(--be-t);border-color:var(--be)"></i> Doing</span>
@@ -139,13 +141,15 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 var(--f-display);letter-spacing:-.02em;mar
   <div class="scrim" id="scrim" hidden></div>
   <aside class="panel" id="panel" hidden aria-modal="true" role="dialog" aria-labelledby="pTitle"></aside>
 
-  <p class="foot">Every node comes from roadmap.sh (pulled 2026-10-01). The stack choices come from your work vault and side projects. TypeScript is the main language and the interview language. Python comes in once, at Stage 3, as a second language, because about half the roles in your career-ops pipeline mention it. Nothing is marked done until I mark it. AWS has its own <a href="https://roadmap.sh/aws">tree</a> for when the Backend tree reaches it. Sources: <a href="https://roadmap.sh/backend">Backend</a> · <a href="https://roadmap.sh/ai-engineer">AI Engineer</a> · <a href="https://roadmap.sh/datastructures-and-algorithms">DSA</a>.</p>
+  <details class="skips foot" id="cut"></details>
+  <p class="foot">Every node comes from roadmap.sh (pulled 2026-10-01), plus FastAPI from the roadmap.sh Python tree. On 2026-10-11 the path was cut from 299 nodes to the ones a first AI Engineer job needs; the cut list above shows the rest. Python is the language for AI work, DSA and interviews. TypeScript stays the work language. Prove-it marks come from your work stack and side projects, and nothing is marked done until you mark it. Sources: <a href="https://roadmap.sh/ai-engineer">AI Engineer</a> · <a href="https://roadmap.sh/datastructures-and-algorithms">DSA</a> · <a href="https://roadmap.sh/backend">Backend</a> · <a href="https://roadmap.sh/python">Python</a>.</p>
 </div>
 <script>
-const T={B:{name:"Backend",c:"--be",t:"--be-t",dir:"backend"},A:{name:"AI Engineer",c:"--ai",t:"--ai-t",dir:"ai"},D:{name:"DSA",c:"--ds",t:"--ds-t",dir:"dsa"}};
+const T={B:{name:"Backend",c:"--be",t:"--be-t",dir:"backend"},A:{name:"AI Engineer",c:"--ai",t:"--ai-t",dir:"ai"},D:{name:"Python & DSA",c:"--ds",t:"--ds-t",dir:"dsa"}};
+const LANES=["A","D","B"];
 const OWNER="godfreystorm",REPO_NAME="lock-in",REPO=`https://github.com/${OWNER}/${REPO_NAME}`,API=`https://api.github.com/repos/${OWNER}/${REPO_NAME}`,PFILE="docs/progress.json";
-const H={n:2.5,p:.5,b:15};
-let STAGES=[],C={},NODES=[],P={s:{},dirs:{}},hpd=2,openId=null,editor=null,saving=Promise.resolve();
+const H={n:2.5,l:.5,p:.5,b:15};
+let STAGES=[],C={},CUT={},NODES=[],P={s:{},dirs:{}},hpd=2,openId=null,editor=null,saving=Promise.resolve();
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
 {const v=+store.get("lockin-hpd");if(v>=1&&v<=4)hpd=v}
 const $=id=>document.getElementById(id);
@@ -205,11 +209,11 @@ function keyForm(after){const f=el("form","authf");const inp=el("input");inp.typ
   return f}
 function closePanel(){$("panel").hidden=true;$("scrim").hidden=true;openId=null}
 function openPanel(n){openId=n.id;const Pn=$("panel");Pn.textContent="";Pn.style.setProperty("--c",`var(${T[n.tree].c})`);
-  const e=eff(n),p=prog(n),c=C[n.id]||{},tree=T[n.tree].dir,code=(n.tree==="D"||e==="b")?" --code":"";
+  const e=eff(n),p=prog(n),c=C[n.id]||{},tree=T[n.tree].dir,code=(n.tree==="D"||e==="b"||n.label==="FastAPI")?" --code":"";
   const x=el("button","p-x","×");x.setAttribute("aria-label","Close");x.onclick=closePanel;Pn.append(x);
   Pn.append(el("div","p-eye",`${T[n.tree].name} · Stage ${n.stage+1}: ${STAGES[n.stage].t} · ${n.group}`));
   const h=el("h3","p-h",n.label);h.id="pTitle";Pn.append(h);
-  const bd=el("div","prow");bd.append(el("span","badge",e==="s"?"Skipped option":e==="p"?"Prove it":e==="b"?"Build project · ~15 h":`New · ~${n.h||2.5} h`));
+  const bd=el("div","prow");bd.append(el("span","badge",e==="s"?"Skipped option":e==="p"?"Prove it":e==="b"?"Build project · ~15 h":e==="l"?"Lesson with Claude · ~30 min":`Full node · ~${n.h||2.5} h`));
   if(false)bd.append(el("span","badge st-"+(e==="s"?"todo":p),e==="s"?"Not on the path":p==="todo"?"To do":p==="doing"?"Doing":"Done ✓"));
   if(n.tag)bd.append(el("span","muted",n.tag));Pn.append(bd);
   if(c.d)Pn.append(el("p","p-d",c.d));
@@ -222,11 +226,15 @@ function openPanel(n){openId=n.id;const Pn=$("panel");Pn.textContent="";Pn.style
     else{
       const how=el("div");how.append(el("div","p-sec","How to finish it"));const ol=el("ol","steps");
       const st=e==="p"?["You already use this at work or in your projects. Close your notes.","Explain it out loud in 60 seconds, or ask Claude to test you.","Clean explanation: mark it done. Shaky: learn it like a new node."]
-        :e==="b"?["Finish the nodes in this stage first; this project uses them.","Build it in your lock-in repo with a README: what it does, how it works, what broke, the numbers.","Use your own data (FocusDown, Aura, PoshPaw), never LineLeader's. AI coding tools are allowed here.","Walk Claude through every choice like an interview. Then mark it done."]
+        :e==="b"?["Finish the full nodes in this stage first; this project uses them.","Build it in Python as a FastAPI service in your lock-in repo, with a README: what it does, how it works, what broke, the eval numbers.","Deploy it so anyone can try it. Use your own or public data, never LineLeader's. AI coding tools are allowed here.","Walk Claude through every choice like an interview. Then mark it done."]
+        :e==="l"?["No reading needed; the links above are optional. Copy the message below and paste it to Claude. It teaches this lesson (and the other open lessons in this group) in one sitting.","Ask for it deep, or ELI5 first. Stop it whenever something doesn't click.","At the end Claude tests you cold for 60 seconds on each one. Pass: mark it done. Shaky: run it again another day."]
         :["Read or watch one or two of the links above (20 to 40 minutes).","Write it in your own words in your lock-in repo, with the sources closed. Code it if there's something to code.","Get tested cold: copy the message below and paste it to Claude.","Pass: mark it done."];
       st.forEach(t=>ol.append(el("li",null,t)));how.append(ol);Pn.append(how);
       const sg=el("div","seg");[["todo","To do"],["doing","Doing"],["done","Done"]].forEach(([v,l])=>{const b=el("button",null,l);b.setAttribute("aria-pressed",String(p===v));b.onclick=()=>{if(p!==v)guard(n,v)};sg.append(b)});Pn.append(sg);const ps=el("p","muted");ps.id="psync";ps.setAttribute("role","status");Pn.append(ps);const gate=el("div");gate.id="gate";Pn.append(gate);
-      const row=el("div","prow");row.append(copyBtn("Copy “test me” message",`Test me on "${n.label}" (${T[n.tree].name} roadmap, ${n.group}). No notes. Ask me to explain it in 60 seconds, then push on the weak spot.`));
+      const row=el("div","prow");
+      if(e==="l"){const open=NODES.filter(m=>m.tree===n.tree&&m.group===n.group&&eff(m)==="l"&&prog(m)!=="done").map(m=>`"${m.label}"`);if(!open.includes(`"${n.label}"`))open.unshift(`"${n.label}"`);
+        row.append(copyBtn("Copy “teach me” message",`Lock-In lesson (${T[n.tree].name}, ${n.group}): teach me ${open.join(", ")} in one sitting. Stay at node depth: what it is, why it matters for an AI Engineer job, one concrete example. Then test me cold for 60 seconds on each and push on the weak spot.`))}
+      else row.append(copyBtn("Copy “test me” message",`Test me on "${n.label}" (${T[n.tree].name} roadmap, ${n.group}). No notes. Ask me to explain it in 60 seconds, then push on the weak spot.`));
       if(n.kind==="s"){const sk=el("button","pbtn","Skip again");sk.onclick=()=>guard(n,"skip");row.append(sk)}
       Pn.append(row);
       const det=el("details","skips");det.append(el("summary",null,"Repo commands (optional)"));
@@ -250,23 +258,26 @@ function render(){
   const stat=(k,v,s,pct,c)=>{const d=el("div","stat");d.append(el("div","k",k),el("div","v",v),el("div","s",s));if(pct!=null){const b=el("div","bar");const i=el("i");i.style.width=pct+"%";i.style.background=`var(${c})`;b.append(i);d.append(b)}top.append(d)};
   const done=live.filter(n=>prog(n)==="done").length,doing=live.filter(n=>prog(n)==="doing").length;
   stat("Overall",Math.round(done/live.length*100)+"%",`${done} done, ${doing} in progress, ${live.length} total`,done/live.length*100,"--ink");
-  ["B","A","D"].forEach(k=>{const L=live.filter(n=>n.tree===k),d=L.filter(n=>prog(n)==="done").length;stat(T[k].name,`${d} / ${L.length}`,`${L.filter(n=>eff(n)==="p").length} are "prove it" nodes`,d/L.length*100,T[k].c)});
+  LANES.forEach(k=>{const L=live.filter(n=>n.tree===k),d=L.filter(n=>prog(n)==="done").length,c=x=>L.filter(n=>eff(n)===x).length;stat(T[k].name,`${d} / ${L.length}`,[c("n")&&`${c("n")} full`,c("b")&&`${c("b")} builds`,c("l")&&`${c("l")} lessons`,c("p")&&`${c("p")} prove-it`].filter(Boolean).join(" · "),d/L.length*100,T[k].c)});
   stat("Finish line",fin.toLocaleDateString("en-US",{month:"short",year:"numeric"}),`~${Math.round(left)} h left at ${hpd} h/day, 80% of days`,null);
   STAGES.forEach((st,si)=>{
     const sn=live.filter(n=>n.stage===si),sd=sn.filter(n=>prog(n)==="done").length,hrs=sn.reduce((a,n)=>a+(n.h||H[eff(n)]),0);
     const sec=el("section","stage"+(sn.length&&sd===sn.length?" complete":""));const sh=el("div","sh");
     sh.append(el("h2",null,st.t),el("span","meta",`${sd}/${sn.length} done · ~${Math.round(hrs)} h · ~${Math.max(1,Math.round(hrs/wk))} wk at ${hpd} h/day`));
     const lanes=el("div","lanes");sec.append(el("span","dot",String(si+1)),sh,lanes);
-    ["B","A","D"].forEach(k=>{const lane=el("div","lane");lane.style.setProperty("--c",`var(${T[k].c})`);
+    LANES.forEach(k=>{const lane=el("div","lane");lane.style.setProperty("--c",`var(${T[k].c})`);
       const groups=st[k]||[],ln=NODES.filter(n=>n.stage===si&&n.tree===k),lv=ln.filter(n=>eff(n)!=="s");
       const lt=el("div","lt");lt.append(el("span",null,T[k].name),el("span",null,lv.length?`${lv.filter(n=>prog(n)==="done").length}/${lv.length}`:""));lane.append(lt);
-      if(!groups.length){lane.classList.add("empty");const p=el("div","gt",k==="B"?"Backend tree complete by this stage.":"DSA keeps going as NeetCode practice.");p.style.cssText="margin-top:12px;font-weight:400;color:var(--muted)";lane.append(p)}
+      if(!groups.length){lane.classList.add("empty");const p=el("div","gt","Nothing in this lane at this stage.");p.style.cssText="margin-top:12px;font-weight:400;color:var(--muted)";lane.append(p)}
       groups.forEach(([g])=>{const gn=ln.filter(n=>n.group===g),on=gn.filter(n=>eff(n)!=="s"),off=gn.filter(n=>eff(n)==="s");
         const box=el("div","grp");box.append(el("div","gt",g));const ch=el("div","chips");on.forEach(n=>ch.append(chip(n)));box.append(ch);
         if(off.length){const det=el("details","skips");det.open=showSkip;det.append(el("summary",null,`${off.length} skipped option${off.length>1?"s":""}`));const c2=el("div","chips");off.forEach(n=>c2.append(chip(n)));det.append(c2);box.append(det)}
         lane.append(box)});
       lanes.append(lane)});
     tree.append(sec)});
+  const cut=$("cut");cut.textContent="";const total=Object.values(CUT).reduce((a,v)=>a+v.length,0);
+  if(total){cut.append(el("summary",null,`Cut for now: ${total} roadmap nodes a first AI Engineer job doesn't need`));
+    Object.entries(CUT).forEach(([lane,list])=>{if(!list.length)return;const p=el("p","muted");p.append(el("b",null,`${lane}: `),document.createTextNode(list.join(" · ")));cut.append(p)})}
 }
 function renderAuth(){const a=$("auth");a.textContent="";
   if(editor){a.append(el("span","muted",`Editing as ${editor.login}`));const b=el("button","pbtn","Lock");b.onclick=()=>{editor=null;store.set("lockin-key",null);renderAuth();render();if(openId)openPanel(NODES.find(n=>n.id===openId))};a.append(b);return}
@@ -283,8 +294,8 @@ $("hpd").addEventListener("input",e=>{hpd=+e.target.value;$("hpdv").textContent=
 $("showSkip").addEventListener("change",render);$("scrim").addEventListener("click",closePanel);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&openId)closePanel()});
 (async()=>{
-  try{const t=await fetch("tree.json").then(r=>r.json());STAGES=t.stages;C=t.content}catch(e){$("tree").textContent="Couldn't load the tree data. Reload the page.";return}
-  STAGES.forEach((st,si)=>["B","A","D"].forEach(k=>(st[k]||[]).forEach(([g,list])=>list.forEach(raw=>{const [label,kind="n",tag="",hrs]=raw.split("|");NODES.push({id:k+"-"+slug(g)+"-"+slug(label),label:label.trim(),kind,tag,tree:k,stage:si,group:g,h:hrs?+hrs:null})}))));
+  try{const t=await fetch("tree.json").then(r=>r.json());STAGES=t.stages;C=t.content;CUT=t.cut||{}}catch(e){$("tree").textContent="Couldn't load the tree data. Reload the page.";return}
+  STAGES.forEach((st,si)=>LANES.forEach(k=>(st[k]||[]).forEach(([g,list])=>list.forEach(raw=>{const [label,kind="n",tag="",hrs]=raw.split("|");NODES.push({id:k+"-"+slug(g)+"-"+slug(label),label:label.trim(),kind,tag,tree:k,stage:si,group:g,h:hrs?+hrs:null})}))));
   await loadProgress();render();renderAuth();
   const k=store.get("lockin-key");if(k)unlock(k).then(why=>{if(why)setSync(why)});
 })();

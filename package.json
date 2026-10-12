@@ -8,6 +8,7 @@
     "done": "tsx scripts/done.ts",
     "progress": "tsx -e \"import('./scripts/nodes.ts').then(m=>m.writeProgress())\"",
     "test": "node --import tsx --test \"**/*.test.ts\"",
+    "test:py": "pytest",
     "run": "tsx"
   },
   "devDependencies": {

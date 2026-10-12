@@ -13,7 +13,7 @@ Why it exists:
 
 Everything lives in this repo:
 
-- **The tree:** [godfreystorm.github.io/lock-in](https://godfreystorm.github.io/lock-in/). All 3 roadmap.sh trees (Backend, AI Engineer, DSA) in 8 stages. Click any node for its description, the free articles and videos to learn from, and the exact command to run next.
+- **The tree:** [godfreystorm.github.io/lock-in](https://godfreystorm.github.io/lock-in/). One path to a first AI Engineer job, built from 3 roadmap.sh trees (AI Engineer, Python & DSA, Backend) in 6 stages. On 2026-10-11 it was cut from 299 nodes to 170; the cut list sits at the bottom of the page. Click any node for its description, the free articles and videos to learn from, and the exact command to run next.
 - **Mark progress right on the tree.** Click a node, then hit **To do / Doing / Done**, the same dashboard as before. Anyone can view the tree, but only you can change it: click **Edit (owner only)** and paste your GitHub key (made once, see below). Each click saves a commit to `docs/progress.json`.
 - **The repo commands are optional, in the background.** `npm run new` makes a node's notes folder and sets it Doing, and `npm run done` sets it Done. They pull first and only move a node forward, so they never undo a dashboard click.
 - **The rules and the weekly log** stay in the vault: `Obsidian Vault/Learning/The Lock-In.md`.
@@ -22,22 +22,24 @@ Everything lives in this repo:
 
 ## The loop: do this for every node
 
-1. **Open the tree** and click the next node in the current stage. Weekdays: Backend. Saturdays: AI. Every weekday, 30 minutes of DSA first.
+1. **Open the tree** and click the next node in the current stage. The AI lane is the main work, every study day. Start each weekday with 30 to 45 minutes of Python & DSA, written by hand with no AI. Backend is mostly lessons: batch a group into one sitting.
 2. **Learn it** from the panel's links: one or two articles or videos, 20 to 40 minutes.
 3. **Start it.** The panel shows the exact command; copy it:
    ```bash
    npm run new -- backend "How does the internet work?"
-   npm run new -- dsa "Hash Tables" --code     # --code adds main.ts + main.test.ts
+   npm run new -- dsa "Hash Tables" --code     # --code adds main.py (code + pytest tests); add --ts for TypeScript
    ```
    A partial name works if it's unique (`"hash"` finds "Hash Tables").
 4. **Write `notes.md` with the sources closed.** If you can't explain it without looking, go back to step 2.
-5. **Code it** (when the node has code) in `main.ts`, with tests in `main.test.ts` for the normal case, an edge case, and the case you think breaks it.
+5. **Code it** (when the node has code) in `main.py`, with pytest tests in the same file for the normal case, an edge case, and the case you think breaks it. Run them with `npm run test:py`.
 6. **Get tested.** In the panel, click **Copy "test me" message**, paste it to Claude, and answer cold. Log the result in `notes.md`.
 7. **Pass? Mark it done and push:**
    ```bash
    npm run done -- backend "How does the internet work?"
    git add -A && git commit -m "backend: how does the internet work" && git push
    ```
+
+**Lesson nodes** (dotted border) skip steps 2 to 5: copy the "teach me" message from the panel, paste it to Claude, and take the lesson (deep or ELI5) plus a cold test in one sitting. It covers the whole group's open lessons at once.
 
 **"Prove it" nodes** (the dashed ones: things you already use at work or in your projects) start the node (step 3), then skip straight to the cold 60-second explain-back with Claude (step 6). Clean explanation: mark it done. Shaky: it becomes a normal node and you go through the whole loop.
 

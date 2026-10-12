@@ -1,5 +1,6 @@
 // Starts a node: makes its folder and marks it Doing on the tree page.
-// Usage: npm run new -- <backend|ai|dsa> "Node name" [--code]
+// Usage: npm run new -- <backend|ai|dsa> "Node name" [--code] [--ts]
+// --code adds main.py (code + pytest tests in one file); add --ts for main.ts + main.test.ts instead.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { findNode, loadNodes, scanFolders, slug, TREES, pullFirst, type Tree, writeProgress } from "./nodes.ts";
@@ -7,7 +8,7 @@ import { findNode, loadNodes, scanFolders, slug, TREES, pullFirst, type Tree, wr
 const [tree, name, ...flags] = process.argv.slice(2);
 
 if (!tree || !TREES.includes(tree as Tree) || !name) {
-  console.error('Usage: npm run new -- <backend|ai|dsa> "Node name" [--code]');
+  console.error('Usage: npm run new -- <backend|ai|dsa> "Node name" [--code] [--ts]');
   process.exit(1);
 }
 
@@ -37,7 +38,13 @@ const notes = readFileSync("templates/notes.md", "utf8")
   .replaceAll("{{id}}", node.id);
 writeFileSync(join(dir, "notes.md"), notes);
 
-if (flags.includes("--code")) {
+if (flags.includes("--code") && !flags.includes("--ts")) {
+  // Python is the language for AI work, DSA and interviews. Tests live in the same file (pytest.ini collects main.py).
+  writeFileSync(
+    join(dir, "main.py"),
+    `"""${node.label}"""\n\n\ndef solve():\n    # your code\n    pass\n\n\ndef test_normal_case():\n    assert solve() is None  # replace with a real check\n`,
+  );
+} else if (flags.includes("--code")) {
   writeFileSync(join(dir, "main.ts"), `// ${node.label}\n\nexport function solve() {\n  // your code\n}\n`);
   writeFileSync(
     join(dir, "main.test.ts"),
