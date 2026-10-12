@@ -1,7 +1,8 @@
 {
- "updated": "2026-10-08T02:26:22.902Z",
+ "updated": "2026-10-12T01:15:29.569Z",
  "s": {
-  "B-introduction-how-does-the-internet-work": "done"
+  "B-introduction-how-does-the-internet-work": "done",
+  "B-introduction-what-is-http": "done"
  },
  "dirs": {
   "B-introduction-how-does-the-internet-work": "backend/001-how-does-the-internet-work"
