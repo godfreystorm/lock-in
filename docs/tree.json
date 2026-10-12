@@ -84,6 +84,12 @@
      [
       "Linux|l"
      ]
+    ],
+    [
+     "Frontend basics",
+     [
+      "React|p|yours"
+     ]
     ]
    ]
   },
@@ -397,7 +403,9 @@
     [
      "Cloud models",
      [
-      "AWS Bedrock|n|enterprise"
+      "AWS Bedrock|n|enterprise",
+      "Azure OpenAI|l",
+      "Google Vertex AI|l"
      ]
     ],
     [
@@ -447,7 +455,8 @@
     [
      "Containers",
      [
-      "Docker|p|work"
+      "Docker|p|work",
+      "Kubernetes|l"
      ]
     ],
     [
@@ -471,6 +480,12 @@
      [
       "Monitoring|p|work · CloudWatch",
       "Instrumentation|l"
+     ]
+    ],
+    [
+     "Infrastructure as code",
+     [
+      "Terraform|l"
      ]
     ]
    ]
@@ -4091,6 +4106,76 @@
     }
    ],
    "src": "https://roadmap.sh/aws"
+  },
+  "B-containers-kubernetes": {
+   "d": "Kubernetes runs and scales many containers across machines: scheduling, restarts, rollouts, service discovery. roadmap.sh gives it its own full roadmap.",
+   "r": [
+    {
+     "t": "roadmap",
+     "n": "Kubernetes roadmap",
+     "u": "https://roadmap.sh/kubernetes"
+    }
+   ],
+   "src": "https://roadmap.sh/backend"
+  },
+  "B-infrastructure-as-code-terraform": {
+   "d": "Describing cloud infrastructure in code files (HCL) that you plan, review and apply, instead of clicking in a console. It shows up in 38% of the DFW engineering roles checked on 2026-10-11. Learn providers, resources, state, and plan vs apply.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "Terraform: Get Started (AWS)",
+     "u": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started"
+    },
+    {
+     "t": "roadmap",
+     "n": "roadmap.sh Terraform roadmap",
+     "u": "https://roadmap.sh/terraform"
+    }
+   ],
+   "src": "https://roadmap.sh/terraform"
+  },
+  "A-cloud-models-azure-openai": {
+   "d": "OpenAI's models served inside Microsoft Azure, with Azure's identity, networking and content filters. Banks and other big enterprises often require it instead of calling OpenAI directly. Azure shows up in 48% of the DFW roles checked on 2026-10-11. Learn deployments vs models, the endpoint and API-version shape, and how it differs from calling OpenAI directly.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "What is Azure OpenAI in Azure AI Foundry Models?",
+     "u": "https://learn.microsoft.com/en-us/azure/ai-foundry/openai/overview"
+    },
+    {
+     "t": "docs",
+     "n": "Azure OpenAI quickstart (Python)",
+     "u": "https://learn.microsoft.com/en-us/azure/ai-foundry/openai/chatgpt-quickstart"
+    }
+   ],
+   "src": "https://roadmap.sh/ai-engineer"
+  },
+  "A-cloud-models-google-vertex-ai": {
+   "d": "Google Cloud's managed platform for Gemini and other models, with Model Garden, grounding and evaluation tools. GCP shows up in 28% of the roles checked on 2026-10-11. One lesson is enough to recognise it and map it onto what you know from Bedrock.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "Generative AI on Vertex AI overview",
+     "u": "https://cloud.google.com/vertex-ai/generative-ai/docs/overview"
+    }
+   ],
+   "src": "https://roadmap.sh/ai-engineer"
+  },
+  "B-frontend-basics-react": {
+   "d": "You build with React and React Native in FocusDown, Aura Index and Curbtip. React shows up in 29% of the roles checked on 2026-10-11, mostly full-stack ones. Prove it in 60 seconds: components, props vs state, effects, and how a render is triggered.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "react.dev: Learn React",
+     "u": "https://react.dev/learn"
+    },
+    {
+     "t": "roadmap",
+     "n": "roadmap.sh React roadmap",
+     "u": "https://roadmap.sh/react"
+    }
+   ],
+   "src": "https://roadmap.sh/react"
   }
  },
  "cut": {
@@ -4217,7 +4302,6 @@
    "Server Side",
    "Functional Testing",
    "Nginx",
-   "Kubernetes",
    "SOA",
    "Service Mesh",
    "Long / Short Polling",
@@ -4232,5 +4316,6 @@
    "Refactoring",
    "Documentation Generation"
   ]
- }
+ },
+ "checked": "2026-10-11: skill counts from 65 live job descriptions (21 DFW, 44 remote; 19 AI-titled) from the career-ops scan"
 }
