@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-12T01:18:07.614Z",
+ "updated": "2026-10-12T01:18:10.187Z",
  "s": {
   "B-introduction-how-does-the-internet-work": "done",
   "B-introduction-what-is-http": "done",
@@ -7,7 +7,8 @@
   "B-introduction-what-is-hosting": "done",
   "B-introduction-dns-and-how-it-works": "done",
   "B-introduction-browsers-and-how-they-work": "done",
-  "B-version-control-git": "done"
+  "B-version-control-git": "done",
+  "B-version-control-github": "done"
  },
  "dirs": {
   "B-introduction-how-does-the-internet-work": "backend/001-how-does-the-internet-work"
