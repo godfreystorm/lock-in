@@ -1,5 +1,5 @@
 {
- "source": "roadmap.sh (AI Engineer, Backend, DSA), pulled 2026-10-01; cut down for the AI Engineer focus on 2026-10-11",
+ "source": "roadmap.sh (AI Engineer, Backend, DSA), pulled 2026-10-01; plus 4 AWS nodes from roadmap.sh/aws; cut down for the AI Engineer focus on 2026-10-11",
  "stages": [
   {
    "t": "Foundations, fast",
@@ -395,6 +395,12 @@
      ]
     ],
     [
+     "Cloud models",
+     [
+      "AWS Bedrock|n|enterprise"
+     ]
+    ],
+    [
      "Build project",
      [
       "Project: Ship it|b|portfolio"
@@ -442,6 +448,14 @@
      "Containers",
      [
       "Docker|p|work"
+     ]
+    ],
+    [
+     "AWS",
+     [
+      "IAM|l",
+      "S3|p|work",
+      "ECS / Fargate|l"
      ]
     ],
     [
@@ -3973,7 +3987,7 @@
    "src": "https://roadmap.sh/ai-engineer"
   },
   "A-build-project-project-ship-it": {
-   "d": "Take one of your two projects off your laptop. Containerize it with Docker, deploy it somewhere real, add tracing (Langfuse) and cost and latency monitoring, and put the eval results in its README. This is IBM's tier 3: shipped, observable, and monitored. Build it in Python as a FastAPI service and deploy it so anyone can try it.",
+   "d": "Take one of your two projects off your laptop. Containerize it with Docker, deploy it somewhere real, add tracing (Langfuse) and cost and latency monitoring, and put the eval results in its README. This is IBM's tier 3: shipped, observable, and monitored. Build it in Python as a FastAPI service and deploy it so anyone can try it. Deploy this one on AWS (ECS/Fargate or Lambda) and call the model through Bedrock, since that's how most enterprise employers run it.",
    "r": [
     {
      "t": "video",
@@ -4008,6 +4022,75 @@
     }
    ],
    "src": "https://roadmap.sh/python"
+  },
+  "A-cloud-models-aws-bedrock": {
+   "d": "AWS's managed service for calling Claude, Llama, Mistral and other models inside an AWS account, with IAM permissions, VPC networking and Guardrails. Big non-tech employers (banks, airlines, retail) often reach models this way instead of through the vendor's own API, and Brightwheel's AI role listed it. Learn the Converse API, Knowledge Bases (managed RAG) and Agents, then point one of your builds at Bedrock. ~2.5 h.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "Amazon Bedrock User Guide",
+     "u": "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html"
+    },
+    {
+     "t": "docs",
+     "n": "Bedrock Converse API (boto3, Python)",
+     "u": "https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html"
+    },
+    {
+     "t": "roadmap",
+     "n": "roadmap.sh AWS roadmap",
+     "u": "https://roadmap.sh/aws"
+    }
+   ],
+   "src": "https://roadmap.sh/aws"
+  },
+  "B-aws-iam": {
+   "d": "Identity and Access Management: users, roles, policies and the principle of least privilege. Every AWS service you call, Bedrock included, goes through IAM, and \"why is this AccessDenied\" is the most common AWS problem you'll hit.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "What is IAM?",
+     "u": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html"
+    },
+    {
+     "t": "roadmap",
+     "n": "roadmap.sh AWS roadmap › IAM",
+     "u": "https://roadmap.sh/aws"
+    }
+   ],
+   "src": "https://roadmap.sh/aws"
+  },
+  "B-aws-s3": {
+   "d": "Object storage: buckets, keys, presigned URLs, lifecycle rules. You use it at work. For AI apps it's where documents for RAG and eval datasets usually live.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "What is Amazon S3?",
+     "u": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    },
+    {
+     "t": "roadmap",
+     "n": "roadmap.sh AWS roadmap › S3",
+     "u": "https://roadmap.sh/aws"
+    }
+   ],
+   "src": "https://roadmap.sh/aws"
+  },
+  "B-aws-ecs-fargate": {
+   "d": "Running containers on AWS without managing servers: a task definition points at your Docker image, and Fargate runs it. It's the usual way to put a FastAPI service on AWS when Lambda's time and size limits don't fit.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "What is AWS Fargate?",
+     "u": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    },
+    {
+     "t": "roadmap",
+     "n": "roadmap.sh AWS roadmap › ECS / Fargate",
+     "u": "https://roadmap.sh/aws"
+    }
+   ],
+   "src": "https://roadmap.sh/aws"
   }
  },
  "cut": {
