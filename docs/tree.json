@@ -462,8 +462,10 @@
     [
      "AWS",
      [
+      "Secrets Manager|p|work",
+      "CloudWatch|p|work",
       "IAM|l",
-      "S3|p|work",
+      "S3|l",
       "ECS / Fargate|l"
      ]
     ],
@@ -523,7 +525,7 @@
      [
       "Monolith|l",
       "Microservices|l",
-      "Serverless|p|work · Lambda",
+      "Serverless|l",
       "Twelve Factor Apps|l"
      ]
     ],
@@ -4076,7 +4078,7 @@
    "src": "https://roadmap.sh/aws"
   },
   "B-aws-s3": {
-   "d": "Object storage: buckets, keys, presigned URLs, lifecycle rules. You use it at work. For AI apps it's where documents for RAG and eval datasets usually live.",
+   "d": "Object storage: buckets, keys, presigned URLs, lifecycle rules. For AI apps it's where documents for RAG and eval datasets usually live.",
    "r": [
     {
      "t": "docs",
@@ -4176,6 +4178,28 @@
     }
    ],
    "src": "https://roadmap.sh/react"
+  },
+  "B-aws-secrets-manager": {
+   "d": "You use it at work: storing and rotating API keys, DB credentials and other secrets so they never live in code or env files. For AI apps it's where model API keys belong. Prove it in 60 seconds: how an app reads a secret, IAM access to it, and rotation.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "What is AWS Secrets Manager?",
+     "u": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+    }
+   ],
+   "src": "https://roadmap.sh/aws"
+  },
+  "B-aws-cloudwatch": {
+   "d": "You use CloudWatch Logs at work. Prove it in 60 seconds: log groups and streams, Logs Insights queries, metrics vs logs, and alarms.",
+   "r": [
+    {
+     "t": "docs",
+     "n": "What is Amazon CloudWatch Logs?",
+     "u": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html"
+    }
+   ],
+   "src": "https://roadmap.sh/aws"
   }
  },
  "cut": {
