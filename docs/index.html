@@ -157,6 +157,8 @@ function copyBtn(label,text){const b=el("button","pbtn",label);b.onclick=()=>{na
 function cmd(text){const w=el("div","cmd");w.append(el("code",null,text),copyBtn("Copy",text));return w}
 const gh=(path,opt={})=>fetch(API+path,{...opt,headers:{Accept:"application/vnd.github+json",...(editor?{Authorization:`Bearer ${editor.token}`}:{}),...(opt.headers||{})}});
 const b64=s=>btoa(unescape(encodeURIComponent(s))),unb64=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,""))));
+async function ghFail(r,what){let m="";try{m=(await r.json()).message||""}catch(e){}const need=r.headers.get("x-accepted-github-permissions");
+  const e=new Error(`${what} ${r.status}`);e.status=r.status;e.why=m+(need?` (needs ${need.replace(/=/g,": ")})`:"");return e}
 function setSync(t){$("sync").textContent=t;const ps=$("psync");if(ps)ps.textContent=t}
 
 async function loadProgress(){
@@ -170,16 +172,18 @@ function save(label,status){
   saving=saving.then(async()=>{
     if(!Object.keys(pending).length){setSync("Saved to GitHub");return}
     for(let attempt=0;attempt<2;attempt++){
-      const cur=await gh(`/contents/${PFILE}?ref=main`,{cache:"no-store"});if(!cur.ok)throw new Error("read "+cur.status);
+      const cur=await gh(`/contents/${PFILE}?ref=main`,{cache:"no-store"});if(!cur.ok)throw await ghFail(cur,"read");
       const j=await cur.json();const remote=JSON.parse(unb64(j.content));
       remote.s={...(remote.s||{}),...pending};for(const k of Object.keys(remote.s))if(remote.s[k]==="todo")delete remote.s[k];
       remote.dirs=remote.dirs||{};remote.updated=new Date().toISOString();
       const put=await gh(`/contents/${PFILE}`,{method:"PUT",body:JSON.stringify({message:`progress: ${label} → ${status}`,content:b64(JSON.stringify(remote,null,1)+"\n"),sha:j.sha,branch:"main"})});
       if(put.ok){pending={};P.updated=remote.updated;setSync("Saved to GitHub");return}
-      if(put.status!==409&&put.status!==422)throw new Error("save "+put.status);
+      if(put.status!==409&&put.status!==422)throw await ghFail(put,"save");
     }
     throw new Error("conflict");
-  }).catch(e=>{setSync(/401|403/.test(e.message)?"Couldn't save: your key was refused. Lock and unlock with a new key.":"Couldn't save. Check your connection and click again.")});
+  }).catch(e=>{setSync(e.status===401?"Couldn't save: your key expired or was revoked. Lock and unlock with a new key."
+    :e.status===403||e.status===404?`Couldn't save: GitHub said "${e.why||e.message}". Give the key Contents: Read and write on lock-in, then Lock and unlock.`
+    :e.status?`Couldn't save (GitHub ${e.status}: ${e.why||"no reason given"}). Click again.`:"Couldn't save. Check your connection and click again.")});
 }
 let pending={};
 function setStatus(n,v){
@@ -197,7 +201,7 @@ function keyForm(after){const f=el("form","authf");const inp=el("input");inp.typ
   const help=el("a",null,"Make a key");help.href="https://github.com/settings/personal-access-tokens/new";help.target="_blank";help.rel="noopener";
   f.append(inp,go,help,err);setTimeout(()=>inp.focus(),0);
   f.onsubmit=async ev=>{ev.preventDefault();err.textContent="";const t=inp.value.trim();if(!t){err.textContent="Paste your key first.";return}
-    go.textContent="Checking…";const ok=await unlock(t,after);go.textContent="Unlock";if(!ok)err.textContent="That key can't write to lock-in. Make one with Contents: Read and write on this repo."};
+    go.textContent="Checking…";const why=await unlock(t,after);go.textContent="Unlock";if(why)err.textContent=why};
   return f}
 function closePanel(){$("panel").hidden=true;$("scrim").hidden=true;openId=null}
 function openPanel(n){openId=n.id;const Pn=$("panel");Pn.textContent="";Pn.style.setProperty("--c",`var(${T[n.tree].c})`);
@@ -268,8 +272,12 @@ function renderAuth(){const a=$("auth");a.textContent="";
   if(editor){a.append(el("span","muted",`Editing as ${editor.login}`));const b=el("button","pbtn","Lock");b.onclick=()=>{editor=null;store.set("lockin-key",null);renderAuth();render();if(openId)openPanel(NODES.find(n=>n.id===openId))};a.append(b);return}
   const b=el("button","pbtn","Edit (owner only)");b.onclick=()=>{a.textContent="";a.append(keyForm())};
   a.append(b)}
-async function unlock(t,after){try{const r=await fetch(API,{headers:{Accept:"application/vnd.github+json",Authorization:`Bearer ${t}`}});if(!r.ok)return false;const j=await r.json();if(!j.permissions||!j.permissions.push)return false;
-  editor={token:t,login:j.owner?.login||OWNER};store.set("lockin-key",t);renderAuth();await loadProgress();render();if(after)after();else if(openId)openPanel(NODES.find(n=>n.id===openId));return true}catch(e){return false}}
+// repo.permissions describes the account, not the key, so a read-only key passes it. Writing a blob (an unreferenced object, no commit) proves Contents: write.
+async function unlock(t,after){try{const h={Accept:"application/vnd.github+json",Authorization:`Bearer ${t}`};
+  const r=await fetch(API,{headers:h});if(!r.ok)return r.status===401?"GitHub doesn't recognise that key (expired or revoked?).":`GitHub refused the key (${r.status}).`;const j=await r.json();
+  const w=await fetch(API+"/git/blobs",{method:"POST",headers:h,body:JSON.stringify({content:"lock-in write check",encoding:"utf-8"})});
+  if(!w.ok){const e=await ghFail(w,"write");return `That key can read lock-in but can't write to it: ${e.why||w.status}. Edit the key to give Contents: Read and write on this repo.`}
+  editor={token:t,login:j.owner?.login||OWNER};store.set("lockin-key",t);renderAuth();await loadProgress();render();if(after)after();else if(openId)openPanel(NODES.find(n=>n.id===openId));return null}catch(e){return "Couldn't reach GitHub. Check your connection."}}
 $("hpd").value=hpd;$("hpdv").textContent=hpd;
 $("hpd").addEventListener("input",e=>{hpd=+e.target.value;$("hpdv").textContent=hpd;store.set("lockin-hpd",String(hpd));render()});
 $("showSkip").addEventListener("change",render);$("scrim").addEventListener("click",closePanel);
@@ -278,7 +286,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&openId)closePanel()
   try{const t=await fetch("tree.json").then(r=>r.json());STAGES=t.stages;C=t.content}catch(e){$("tree").textContent="Couldn't load the tree data. Reload the page.";return}
   STAGES.forEach((st,si)=>["B","A","D"].forEach(k=>(st[k]||[]).forEach(([g,list])=>list.forEach(raw=>{const [label,kind="n",tag="",hrs]=raw.split("|");NODES.push({id:k+"-"+slug(g)+"-"+slug(label),label:label.trim(),kind,tag,tree:k,stage:si,group:g,h:hrs?+hrs:null})}))));
   await loadProgress();render();renderAuth();
-  const k=store.get("lockin-key");if(k)unlock(k);
+  const k=store.get("lockin-key");if(k)unlock(k).then(why=>{if(why)setSync(why)});
 })();
 </script>
 </body>
